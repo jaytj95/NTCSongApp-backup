@@ -2,6 +2,7 @@ const {
     ListView,
     AppRegistry,
     View,
+    Text,
 } = ReactNative;
 import {
     StackNavigator,
@@ -66,8 +67,9 @@ export default class SongList extends React.Component {
     }
 
     _renderItem(item) {
+        const { navigate } = this.props.navigation;
         return (
-            <ListItem item={item} onpress=""/>
+            <ListItem item={item} onPress={() => navigate('Chat', { item })}/>
         )
     }
     render() {
@@ -84,8 +86,24 @@ export default class SongList extends React.Component {
     }
 }
 
+class ChatScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Chat with ${navigation.state.params.item.SongTitle}',
+    };
+    render() {
+        const { params } = this.props.navigation.state;
+        return (
+            <View>
+                <Text>Yo{params.item.SongTitle}</Text>
+            </View>
+        );
+    }
+}
+
 const NTCSongApp = StackNavigator({
     Home: { screen: SongList },
+    Chat: { screen: ChatScreen },
+
 });
 
 AppRegistry.registerComponent('NTCSongApp', () => NTCSongApp);
