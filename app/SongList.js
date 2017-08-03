@@ -1,11 +1,12 @@
 const {
-    AppRegistry,
     ListView,
-    StyleSheet,
-    Text,
+    AppRegistry,
     View,
-    TouchableHighlight,
 } = ReactNative;
+import {
+    StackNavigator,
+} from 'react-navigation';
+
 import ReactNative from 'react-native';
 import * as firebase from 'firebase';
 import React, {Component} from 'react';
@@ -24,7 +25,12 @@ var firebaseConfig = {
 };
 var firebaseApp = firebase.initializeApp(firebaseConfig);
 
-export default class NTCSongApp extends React.Component {
+export default class SongList extends React.Component {
+
+    static navigationOptions = {
+        title: 'NTC Songs',
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -47,7 +53,7 @@ export default class NTCSongApp extends React.Component {
             var items = [];
             snap.forEach((child) => {
                 items.push({
-                    title: child.child("SongTitle").val(),
+                    title: child.child("SongNumber").val() + ": " + child.child("SongTitle").val(),
                     _key: child.key
                 });
             });
@@ -67,7 +73,6 @@ export default class NTCSongApp extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                    <StatusBar title="NTC Song List"/>
                 <ListView
                     dataSource={this.state.dataSource}
                     renderRow={this._renderItem.bind(this)}
@@ -78,3 +83,9 @@ export default class NTCSongApp extends React.Component {
         );
     }
 }
+
+const NTCSongApp = StackNavigator({
+    Home: { screen: SongList },
+});
+
+AppRegistry.registerComponent('NTCSongApp', () => NTCSongApp);
