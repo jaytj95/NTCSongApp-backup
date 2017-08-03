@@ -55,6 +55,9 @@ export default class SongList extends React.Component {
             snap.forEach((child) => {
                 items.push({
                     title: child.child("SongNumber").val() + ": " + child.child("SongTitle").val(),
+                    SongTitle: child.child("SongTitle").val(),
+                    SongNumber: child.child("SongNumber").val(),
+                    SongText: child.child("SongText").val(),
                     _key: child.key
                 });
             });
@@ -69,7 +72,7 @@ export default class SongList extends React.Component {
     _renderItem(item) {
         const { navigate } = this.props.navigation;
         return (
-            <ListItem item={item} onPress={() => navigate('Chat', { item })}/>
+            <ListItem item={item} onPress={() => navigate('SongView', item)}/>
         )
     }
     render() {
@@ -86,15 +89,15 @@ export default class SongList extends React.Component {
     }
 }
 
-class ChatScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Chat with ${navigation.state.params.item.SongTitle}',
-    };
+class SongView extends React.Component {
+    static navigationOptions = ({ navigation }) => ({
+        title: `${navigation.state.params.SongTitle}`,
+    });
     render() {
         const { params } = this.props.navigation.state;
         return (
             <View>
-                <Text>Yo{params.item.SongTitle}</Text>
+                <Text>{params.SongText}</Text>
             </View>
         );
     }
@@ -102,7 +105,7 @@ class ChatScreen extends React.Component {
 
 const NTCSongApp = StackNavigator({
     Home: { screen: SongList },
-    Chat: { screen: ChatScreen },
+    SongView: { screen: SongView },
 
 });
 
