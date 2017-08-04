@@ -25,6 +25,11 @@ var styles = StyleSheet.create({
         color: '#000',
         fontSize: 16,
     },
+    liTextNum: {
+        color: '#1866ff',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
     center: {
         textAlign: 'center',
     },
@@ -40,6 +45,11 @@ var styles = StyleSheet.create({
         paddingLeft: 16,
         paddingTop: 14,
         paddingBottom: 16,
+    },
+    songText: {
+        color: '#232323',
+        fontSize: 24,
+        textAlign: 'left',
     },
 })
 

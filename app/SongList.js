@@ -3,6 +3,8 @@ const {
     AppRegistry,
     View,
     Text,
+    ScrollView,
+    TextInput,
 } = ReactNative;
 import {
     StackNavigator,
@@ -11,7 +13,6 @@ import {
 import ReactNative from 'react-native';
 import * as firebase from 'firebase';
 import React, {Component} from 'react';
-const StatusBar = require('./components/StatusBar');
 const ListItem = require('./components/ListItem');
 const styles = require('./styles.js');
 
@@ -25,6 +26,9 @@ var firebaseConfig = {
     messagingSenderId: "955827220203"
 };
 var firebaseApp = firebase.initializeApp(firebaseConfig);
+
+// remove debugging annoyance
+console.ignoredYellowBox = ['Setting a timer'];
 
 export default class SongList extends React.Component {
 
@@ -45,21 +49,25 @@ export default class SongList extends React.Component {
         return firebaseApp.database().ref();
     }
     componentDidMount() {
-        this.listenForItems(this.itemsRef);
+        this.listenForItems(this.itemsRef, "");
     }
-    listenForItems(itemsRef) {
+    listenForItems(itemsRef, text) {
         itemsRef.on('value', (snap) => {
 
             // get children as an array
             var items = [];
             snap.forEach((child) => {
-                items.push({
-                    title: child.child("SongNumber").val() + ": " + child.child("SongTitle").val(),
-                    SongTitle: child.child("SongTitle").val(),
-                    SongNumber: child.child("SongNumber").val(),
-                    SongText: child.child("SongText").val(),
-                    _key: child.key
-                });
+                var title = child.child("SongNumber").val().toLowerCase() + ": " + child.child("SongTitle").val().toLowerCase();
+                // if title of song contains filter text
+                if (title.indexOf(text.toLowerCase()) !== -1) {
+                    items.push({
+                        title: title,
+                        SongTitle: child.child("SongTitle").val(),
+                        SongNumber: child.child("SongNumber").val(),
+                        SongText: child.child("SongText").val(),
+                        _key: child.key
+                    });
+                }
             });
 
             this.setState({
@@ -78,6 +86,13 @@ export default class SongList extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+
+                <TextInput
+                    style={styles.li}
+                    value={this.state.searchText}
+                    onChange={this.setSearchText.bind(this)}
+                    placeholder='Search' />
+
                 <ListView
                     dataSource={this.state.dataSource}
                     renderRow={this._renderItem.bind(this)}
@@ -87,7 +102,12 @@ export default class SongList extends React.Component {
             </View>
         );
     }
+
+    setSearchText(text) {
+        this.listenForItems(this.itemsRef, text);
+    }
 }
+
 
 class SongView extends React.Component {
     static navigationOptions = ({ navigation }) => ({
@@ -96,12 +116,15 @@ class SongView extends React.Component {
     render() {
         const { params } = this.props.navigation.state;
         return (
-            <View>
-                <Text>{params.SongText}</Text>
-            </View>
+            <ScrollView>
+                <View>
+                    <Text style={styles.songText}>{params.SongText}</Text>
+                </View>
+            </ScrollView>
         );
     }
 }
+
 
 const NTCSongApp = StackNavigator({
     Home: { screen: SongList },
