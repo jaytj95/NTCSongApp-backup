@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>NTC Song Tagger</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-database.js"></script>
+  <script src="scripts/ntc_firebase.js"></script>
+  <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+
+<div class="container-fluid">
+  <h1>NTC Song Tagger</h1>
+  <p>We need you to tag some songs for an upcoming app</p>
+  <h4 id="loading">Loading...Please wait!</h4>
+  <button id="getSongButton" type="button" class="btn">Get New Song</button>
+  <h3 id="title">SONG TITLE</h3>
+  <pre id="lyrics">
+    <p>SONG LYRICS</p>
+  </pre>
+  <div id="tagbox">
+    <form>
+      <label><input id="worship" type="checkbox" value="">Worship</label><br />
+      <label><input id="fast" type="checkbox" value="">Fast</label><br />
+      <label><input id="slow" type="checkbox" value="">Slow</label><br />
+      <label><input id="praise" type="checkbox" value="">Praise</label><br />
+      <button id="submit" class="btn" type="button">Submit Tags</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
