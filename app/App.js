@@ -42,6 +42,7 @@ export default class SongList extends React.Component {
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => row1 !== row2,
             })
+
         };
         this.itemsRef = this.getRef().child('song_list');
     }
@@ -52,29 +53,28 @@ export default class SongList extends React.Component {
         this.listenForItems(this.itemsRef, "");
     }
     listenForItems(itemsRef, text) {
-        itemsRef.on('value', (snap) => {
+            itemsRef.on('value', (snap) => {
+                var items = [];
+                // get children as an array
+                snap.forEach((child) => {
+                    var title = child.child("SongNumber").val().toLowerCase() + ": " + child.child("SongTitle").val().toLowerCase();
+                    // if title of song contains filter text
+                    if (title.indexOf(text) !== -1) {
+                        items.push({
+                            title: title,
+                            SongTitle: child.child("SongTitle").val(),
+                            SongNumber: child.child("SongNumber").val(),
+                            SongText: child.child("SongText").val(),
+                            _key: child.key
+                        });
+                    }
+                });
 
-            // get children as an array
-            var items = [];
-            snap.forEach((child) => {
-                var title = child.child("SongNumber").val().toLowerCase() + ": " + child.child("SongTitle").val().toLowerCase();
-                // if title of song contains filter text
-                if (title.indexOf(text.toLowerCase()) !== -1) {
-                    items.push({
-                        title: title,
-                        SongTitle: child.child("SongTitle").val(),
-                        SongNumber: child.child("SongNumber").val(),
-                        SongText: child.child("SongText").val(),
-                        _key: child.key
-                    });
-                }
+                this.setState({
+                    dataSource: this.state.dataSource.cloneWithRows(items)
+                });
+
             });
-
-            this.setState({
-                dataSource: this.state.dataSource.cloneWithRows(items)
-            });
-
-        });
     }
 
     _renderItem(item) {
@@ -90,7 +90,7 @@ export default class SongList extends React.Component {
                 <TextInput
                     style={styles.li}
                     value={this.state.searchText}
-                    onChange={this.setSearchText.bind(this)}
+                    onChangeText={this.setSearchText.bind(this)}
                     placeholder='Search' />
 
                 <ListView
