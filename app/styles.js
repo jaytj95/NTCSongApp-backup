@@ -23,7 +23,16 @@ var styles = StyleSheet.create({
     },
     liText: {
         color: '#000',
-        fontSize: 16,
+        fontSize: 18,
+    },
+    liTextBold: {
+        color: '#000',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    liTextSecondary: {
+        color: '#828282',
+        fontSize: 12,
     },
     liTextNum: {
         color: '#1866ff',
@@ -50,6 +59,12 @@ var styles = StyleSheet.create({
         color: '#232323',
         fontSize: 24,
         textAlign: 'left',
+    },
+    songTextChorus: {
+        color: '#232323',
+        fontSize: 24,
+        textAlign: 'left',
+        fontStyle: 'italic'
     },
 })
 

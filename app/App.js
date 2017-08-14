@@ -5,6 +5,7 @@ const {
     Text,
     ScrollView,
     TextInput,
+    StyleSheet,
 } = ReactNative;
 import {
     StackNavigator,
@@ -15,6 +16,9 @@ import * as firebase from 'firebase';
 import React, {Component} from 'react';
 const ListItem = require('./components/ListItem');
 const styles = require('./styles.js');
+const reactStringReplace = require('react-string-replace')
+
+import HTMLView from 'react-native-htmlview';
 
 // firebase init
 var firebaseConfig = {
@@ -57,14 +61,16 @@ export default class SongList extends React.Component {
                 var items = [];
                 // get children as an array
                 snap.forEach((child) => {
-                    var title = child.child("SongNumber").val().toLowerCase() + ": " + child.child("SongTitle").val().toLowerCase();
+                    var songText = child.child("SongText").val();
+                    var title = child.child("SongNumber").val().toLowerCase() + ": " + child.child("SongTitle").val().toLowerCase() + songText.toLowerCase();
+
                     // if title of song contains filter text
-                    if (title.indexOf(text) !== -1) {
+                    if (title.indexOf(text.toLowerCase()) !== -1) {
                         items.push({
                             title: title,
                             SongTitle: child.child("SongTitle").val(),
                             SongNumber: child.child("SongNumber").val(),
-                            SongText: child.child("SongText").val(),
+                            SongText: songText,
                             _key: child.key
                         });
                     }
@@ -86,7 +92,6 @@ export default class SongList extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-
                 <TextInput
                     style={styles.li}
                     value={this.state.searchText}
@@ -98,7 +103,6 @@ export default class SongList extends React.Component {
                     renderRow={this._renderItem.bind(this)}
                     enableEmptySections={true}
                     style={styles.listview}/>
-
             </View>
         );
     }
@@ -113,23 +117,44 @@ class SongView extends React.Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.state.params.SongTitle}`,
     });
+
     render() {
         const { params } = this.props.navigation.state;
+        var renderString = `<p>${params.SongText}</p>`;
+        renderString = replaceAll(renderString, "\\[chorus:", '<span>');
+        renderString = replaceAll(renderString, "]", '</span>');
+
         return (
             <ScrollView>
-                <View>
-                    <Text style={styles.songText}>{params.SongText}</Text>
-                </View>
+                <HTMLView
+                    value={renderString}
+                    stylesheet={htmlStyles}
+                />
             </ScrollView>
         );
     }
 }
 
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(find, 'g'), replace);
+}
+
+const htmlStyles = StyleSheet.create({
+    p: {
+        fontSize: 20,
+        fontWeight: '300',
+        color: '#000000',
+    },
+    span: {
+        fontStyle: 'italic'
+    }
+
+});
+
 
 const NTCSongApp = StackNavigator({
     Home: { screen: SongList },
     SongView: { screen: SongView },
-
 });
 
 AppRegistry.registerComponent('NTCSongApp', () => NTCSongApp);
