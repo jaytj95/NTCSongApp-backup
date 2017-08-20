@@ -10,9 +10,9 @@ class ListItem extends Component {
                 <View style={styles.li}>
                     <Text>
                         <Text style={styles.liTextNum}>{this.props.item.SongNumber}:</Text>
-                        <Text style={styles.liText}> {this.props.item.SongTitle}</Text>
+                        <Text style={styles.liText}> {this.props.item.DisplayText1}</Text>
                     </Text>
-                    <Text numberOfLines={1} style={styles.liTextSecondary}>{this.props.item.SongText}</Text>
+                    <Text numberOfLines={1} style={styles.liTextSecondary}>{this.props.item.DisplayText2}</Text>
                 </View>
             </TouchableHighlight>
         );

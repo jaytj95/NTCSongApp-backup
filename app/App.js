@@ -63,7 +63,7 @@ export default class SongList extends React.Component {
                 snap.forEach((child) => {
                     var songText = child.child("SongText").val();
                     var title = child.child("SongNumber").val().toLowerCase() + ": " + child.child("SongTitle").val().toLowerCase() + songText.toLowerCase();
-
+                    var display2 = replaceAll(child.child("SongText").val(), "\\[chorus:|\\[bold:", "");
                     // if title of song contains filter text
                     if (title.indexOf(text.toLowerCase()) !== -1) {
                         items.push({
@@ -71,6 +71,8 @@ export default class SongList extends React.Component {
                             SongTitle: child.child("SongTitle").val(),
                             SongNumber: child.child("SongNumber").val(),
                             SongText: songText,
+                            DisplayText1: child.child("SongTitle").val(),
+                            DisplayText2: display2,
                             _key: child.key
                         });
                     }
@@ -121,8 +123,9 @@ class SongView extends React.Component {
     render() {
         const { params } = this.props.navigation.state;
         var renderString = `<p>${params.SongText}</p>`;
-        renderString = replaceAll(renderString, "\\[chorus:", '<span>');
-        renderString = replaceAll(renderString, "]", '</span>');
+        renderString = replaceAll(renderString, "\\[chorus:", '<chorus>');
+        renderString = replaceAll(renderString, "\\[bold:", '<bold>');
+        renderString = replaceAll(renderString, "]", '</bold></chorus>');
 
         return (
             <ScrollView>
@@ -145,10 +148,13 @@ const htmlStyles = StyleSheet.create({
         fontWeight: '300',
         color: '#000000',
     },
-    span: {
+    chorus: {
         fontStyle: 'italic'
-    }
+    },
 
+    bold: {
+        fontWeight: 'bold'
+    }
 });
 
 
