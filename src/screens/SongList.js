@@ -41,7 +41,7 @@ export default class SongList extends React.Component {
         this.state = {
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => row1 !== row2,
-            })
+            }),
 
         };
         this.itemsRef = this.getRef().child('song_list');
@@ -52,7 +52,7 @@ export default class SongList extends React.Component {
     componentDidMount() {
         this.listenForItems(this.itemsRef, "");
     }
-    async listenForItems(itemsRef, text) {
+    async listenForItems(itemsRef) {
         var items = [];
         NetInfo.isConnected.fetch().then(async isConnected => {
             if (isConnected) {
@@ -63,25 +63,22 @@ export default class SongList extends React.Component {
                         let songText = child.child("SongText").val();
                         let title = child.child("SongNumber").val().toLowerCase() + ": " + child.child("SongTitle").val().toLowerCase() + songText.toLowerCase();
                         let display2 = replaceAll(child.child("SongText").val(), "\\[chorus:|\\[bold:", "");
-                        // if title of song contains filter text
-                        if (title.indexOf(text.toLowerCase()) !== -1) {
-                            items.push({
-                                title: title,
-                                SongTitle: child.child("SongTitle").val(),
-                                SongNumber: child.child("SongNumber").val(),
-                                SongText: songText,
-                                DisplayText1: child.child("SongTitle").val(),
-                                DisplayText2: display2,
-                                _key: child.key
-                            });
-                        }
-
+                        items.push({
+                            title: title,
+                            SongTitle: child.child("SongTitle").val(),
+                            SongNumber: child.child("SongNumber").val(),
+                            SongText: songText,
+                            DisplayText1: child.child("SongTitle").val(),
+                            DisplayText2: display2,
+                            _key: child.key
+                        });
                     });
 
                     console.log("got " + items.length + " songs")
 
                     this.setState({
-                        dataSource: this.state.dataSource.cloneWithRows(items)
+                        dataSource: this.state.dataSource.cloneWithRows(items),
+                        originalSet: items,
                     });
 
                     let stringedItems = JSON.stringify(items)
@@ -118,7 +115,8 @@ export default class SongList extends React.Component {
                         console.log("Contents!!")
                         contents = JSON.parse(contents)
                         this.setState({
-                            dataSource: this.state.dataSource.cloneWithRows(contents)
+                            dataSource: this.state.dataSource.cloneWithRows(contents),
+                            originalSet: contents,
                         });
 
                     })
@@ -136,12 +134,38 @@ export default class SongList extends React.Component {
         )
     }
     render() {
+        let setSearchText = (text) => {
+            console.log("searching for songs with [" + text + "]")
+            let originalDataSet = this.state.originalSet;
+            console.log("length of original " + originalDataSet.length)
+            var items = [];
+            if(text.length === 0) {
+                console.log("empty string");
+                this.setState({
+                    dataSource: this.state.dataSource.cloneWithRows(originalDataSet),
+                });
+            } else {
+                // begin function
+                console.log("begin search");
+                for (let i = 0; i < originalDataSet.length; i++) {
+                    let obj = originalDataSet[i];
+                    console.log("checking if " + obj.title + "has " + text)
+                    if (obj.title.indexOf(text.toLowerCase()) !== -1) {
+                        items.push(obj)
+                    }
+                }
+                this.setState({
+                    dataSource: this.state.dataSource.cloneWithRows(items),
+                });
+
+            }
+        }
         return (
             <View style={styles.container}>
                 <TextInput
                     style={styles.li}
                     value={this.state.searchText}
-                    onChangeText={this.setSearchText.bind(this)}
+                    onChangeText={setSearchText}
                     placeholder='Search' />
 
                 <ListView
@@ -151,10 +175,6 @@ export default class SongList extends React.Component {
                     style={styles.listview}/>
             </View>
         );
-    }
-
-    setSearchText(text) {
-        this.listenForItems(this.itemsRef, text);
     }
 }
 
