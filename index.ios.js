@@ -1,4 +1,4 @@
+import { AppRegistry } from 'react-native';
+import App from './src/App';
 
-// index.ios.js
-// index.android.js
-import './app/App';
+AppRegistry.registerComponent('NTCSongApp', () => App);
