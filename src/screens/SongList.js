@@ -4,7 +4,7 @@ const {
     View,
     TextInput,
     NetInfo,
-    AsyncStorage,
+    ActivityIndicator,
 } = ReactNative;
 
 import ReactNative from 'react-native';
@@ -33,7 +33,7 @@ console.ignoredYellowBox = ['Setting a timer'];
 export default class SongList extends React.Component {
 
     static navigationOptions = {
-        title: 'NTC Songs',
+        title: 'NTC Song Book',
     };
 
     constructor(props) {
@@ -42,7 +42,7 @@ export default class SongList extends React.Component {
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => row1 !== row2,
             }),
-
+            loading: true,
         };
         this.itemsRef = this.getRef().child('song_list');
     }
@@ -68,6 +68,7 @@ export default class SongList extends React.Component {
                             SongTitle: child.child("SongTitle").val(),
                             SongNumber: child.child("SongNumber").val(),
                             SongText: songText,
+                            SongTags: child.child("Tags").val(),
                             DisplayText1: child.child("SongTitle").val(),
                             DisplayText2: display2,
                             _key: child.key
@@ -79,6 +80,7 @@ export default class SongList extends React.Component {
                     this.setState({
                         dataSource: this.state.dataSource.cloneWithRows(items),
                         originalSet: items,
+                        loading: false,
                     });
 
                     let stringedItems = JSON.stringify(items)
@@ -89,6 +91,8 @@ export default class SongList extends React.Component {
                         .catch((err) => {
                             console.log(err.message);
                     });
+                    //close connection? we don't care about realtime updates to the db
+                    firebaseApp.database().goOffline();
                 });
             } else {
                 console.log("no internet?")
@@ -117,6 +121,7 @@ export default class SongList extends React.Component {
                         this.setState({
                             dataSource: this.state.dataSource.cloneWithRows(contents),
                             originalSet: contents,
+                            loading: false,
                         });
 
                     })
@@ -149,7 +154,6 @@ export default class SongList extends React.Component {
                 console.log("begin search");
                 for (let i = 0; i < originalDataSet.length; i++) {
                     let obj = originalDataSet[i];
-                    console.log("checking if " + obj.title + "has " + text)
                     if (obj.title.indexOf(text.toLowerCase()) !== -1) {
                         items.push(obj)
                     }
@@ -162,17 +166,31 @@ export default class SongList extends React.Component {
         }
         return (
             <View style={styles.container}>
-                <TextInput
-                    style={styles.li}
-                    value={this.state.searchText}
-                    onChangeText={setSearchText}
-                    placeholder='Search' />
 
-                <ListView
-                    dataSource={this.state.dataSource}
-                    renderRow={this._renderItem.bind(this)}
-                    enableEmptySections={true}
-                    style={styles.listview}/>
+                {this.state.loading && (
+                    <ActivityIndicator
+                        style={{ height: 80 }}
+                        color="#6d3f77"
+                        size="large"
+                    />
+                )}
+
+                {!this.state.loading && (
+                    <View>
+                        <TextInput
+                            style={styles.li}
+                            value={this.state.searchText}
+                            onChangeText={setSearchText}
+                            placeholder='Search' />
+                        <ListView
+                            dataSource={this.state.dataSource}
+                            renderRow={this._renderItem.bind(this)}
+                            enableEmptySections={true}
+                            style={styles.listview}/>
+                    </View>
+                )}
+
+
             </View>
         );
     }

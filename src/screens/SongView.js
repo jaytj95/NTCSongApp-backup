@@ -18,6 +18,7 @@ export default class SongView extends React.Component {
         return (
             <ScrollView>
                 <HTMLView
+                    style={{padding: 5}}
                     value={renderString}
                     stylesheet={htmlStyles}
                 />
