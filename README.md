@@ -8,3 +8,5 @@ The next step is creating the app. I am new to React Native and web development 
 The final piece of the puzzle is the song tagger. Currently, none of the songs in Melodie are "tagged." That is to say, there is no way for our app to know what songs are about love, which songs are about praise, which songs are fast, etc. So I built a very simple web app that allows a user to go in and write custom tags for a song. With this, many people can go in and enter tags for songs. If we enough people to contribute, the tagging would be very simple. Another option would be to employ some machine learning to each song that would be able to parse the songs into respective categories, but we think that's a bit overkill.
 
 Build Questions? Want to get involved? Contact Jason John (jasontjohn95@gmail.com)
+
+[Python code for parsing the db](https://gist.github.com/jaytj95/7a7fa249bc106b2d9d62cd208b6dc35e)
